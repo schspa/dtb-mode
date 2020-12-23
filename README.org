@@ -1,0 +1,14 @@
+* dtb-mode
+
+  Show dts souces when opening a dtb file in Emacs
+
+** emacs configuration
+*** Use quelpa
+   #+begin_src emacs-lisp
+     (use-package dtb-mode
+       :quelpa
+       (dtb-mode :fetcher github
+                 :repo "schspa/dtb-mode")
+       :ensure t
+       )
+   #+end_src
