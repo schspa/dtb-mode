@@ -38,7 +38,7 @@
 (defvar-local dtb-mode nil)
 
 (defvar dtb-mode-command "dtc -I dtb %s"
-  "The shell command to use for `dtb-mode'.")
+  "The shell command to use for function `dtb-mode'.")
 
 ;;;###autoload
 (defun dtb-mode ()
