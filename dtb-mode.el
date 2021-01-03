@@ -4,9 +4,8 @@
 
 ;; Author: Schspa Shi <schspa@gmail.com>
 ;; URL: https://github.com/schspa/dtb-mode
-;; Package-Version: 20201223.2037
 ;; Package-Requires: ((emacs "25"))
-;; Version: 1.0
+;; Version: 20210102.2003
 ;; Keywords: dtb dts convenience
 
 ;; This file is NOT part of GNU Emacs.
@@ -22,7 +21,7 @@
 ;; GNU General Public License for more details.
 
 ;; For a full copy of the GNU General Public License
-;; see <http://www.gnu.org/licenses/>.
+;; see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 ;;
@@ -35,27 +34,34 @@
 
 ;;; Code:
 
-(defvar-local dtb-mode nil)
+(defgroup dtb nil
+  "Minor mode for viewing plantuml file."
+  :group 'languages)
 
-(defvar dtb-mode-command "dtc -I dtb %s"
-  "The shell command to use for function `dtb-mode'.")
+(defcustom dtb-dtc-executable-path
+  "dtc"
+  "The location of the dtc executable."
+  :type 'string
+  :group 'dtb)
 
-;;;###autoload
-(defun dtb-mode ()
-  (interactive)
+(define-minor-mode dtb-mode
+  "minor-mode for viewing device tree blobs."
+  nil " dtb" nil
   (let ((inhibit-read-only t))
-    (if dtb-mode
-        (progn
-          (erase-buffer)
-          (insert-file-contents (buffer-file-name))
-          (setq dtb-mode nil))
-      (setq dtb-mode t)
+    (cond
+     (dtb-mode
       (erase-buffer)
       (insert (shell-command-to-string
-               (format dtb-mode-command (buffer-file-name))))
-      (goto-char (point-min)))
-    (set-buffer-modified-p nil)
-    (read-only-mode 1)))
+               (format "%s -I dtb %s"
+                       dtb-dtc-executable-path
+                       (shell-quote-argument (buffer-file-name)))))
+      (goto-char (point-min))
+      (if (fboundp 'dts-mode) (dts-mode)))
+     (t
+      (erase-buffer)
+      (insert-file-contents (buffer-file-name))))
+    (read-only-mode)
+    (set-buffer-modified-p nil)))
 
 ;;;###autoload
 (add-to-list 'magic-mode-alist '("^\320\015\376\355" . dtb-mode))
