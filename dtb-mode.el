@@ -47,21 +47,26 @@
 (define-minor-mode dtb-mode
   "minor-mode for viewing device tree blobs."
   nil " dtb" nil
-  (let ((inhibit-read-only t))
+  (let ((inhibit-read-only t)
+        (file-name (buffer-file-name))
+        (dtc_bin (executable-find dtb-dtc-executable-path)))
     (cond
-     (dtb-mode
-      (erase-buffer)
-      (insert (shell-command-to-string
-               (format "%s -I dtb %s"
-                       dtb-dtc-executable-path
-                       (shell-quote-argument (buffer-file-name)))))
-      (goto-char (point-min))
-      (if (fboundp 'dts-mode) (dts-mode)))
-     (t
-      (erase-buffer)
-      (insert-file-contents (buffer-file-name))))
-    (read-only-mode)
-    (set-buffer-modified-p nil)))
+     ((not file-name) (message "No file association with current buffer"))
+     ((not dtc_bin) (message "Can't find dtc executable"))
+     (t (progn
+          (if dtb-mode
+              (progn
+                (erase-buffer)
+                (insert (shell-command-to-string
+                         (format "%s -I dtb %s"
+                                 dtb-dtc-executable-path
+                                 (shell-quote-argument file-name))))
+                (goto-char (point-min))
+                (if (fboundp 'dts-mode) (dts-mode)))
+            (erase-buffer)
+            (insert-file-contents file-name))
+          (read-only-mode +1)
+          (set-buffer-modified-p nil))))))
 
 ;;;###autoload
 (add-to-list 'magic-mode-alist '("^\320\015\376\355" . dtb-mode))
