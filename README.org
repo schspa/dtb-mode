@@ -1,4 +1,5 @@
 * dtb-mode
+  [[https://melpa.org/#/dtb-mode][file:https://melpa.org/packages/dtb-mode-badge.svg]]
 
   Show dts souces when opening a dtb file in Emacs
 
@@ -9,6 +10,5 @@
        :quelpa
        (dtb-mode :fetcher github
                  :repo "schspa/dtb-mode")
-       :ensure t
-       )
+       :ensure t)
    #+end_src
